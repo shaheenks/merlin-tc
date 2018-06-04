@@ -8,6 +8,7 @@ const downloadResults = require('./download-results');
 
 const querySql = require('./query-sql');
 const rmQuery = require('./rm-query');
+const lsQuery = require('./ls-query');
 const loadQuery = require('./load-query');
 const saveQuery = require('./save-query');
 
@@ -31,6 +32,7 @@ module.exports = {
     downloadResults: downloadResults.handleRequest,
     querySql: querySql.handleRequest,
     rmQuery: rmQuery.handleRequest,
+    lsQuery: lsQuery.handleRequest,
     loadQuery: loadQuery.handleRequest,
     saveQuery: saveQuery.handleRequest,
     createScriptList: createScriptList.handleRequest,

@@ -72,6 +72,8 @@ const handleRequest = (params) => {
             return requestHandler.rmQuery({...params, requestType, clientReqId, queryName: attributes['query-name']});
             break;
         case 'ls-query':
+            return requestHandler.lsQuery({...params, requestType, clientReqId, userOnly: attributes['user-only'], serverRequestHandler});
+            break;
         case 'create-script-list':
             return requestHandler.createScriptList({...params, requestType, clientReqId, scriptListName: attributes['script-list-name']});
             break;

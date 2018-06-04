@@ -11,7 +11,7 @@ var builder = new xml2js.Builder();
 
 app.use(bodyParser.xml());
 
-const PORT = process.env.port || 3010;
+const PORT = process.env.PORT || 3010;
 
 app.get('/', (req, res) => {
     res.send('MOCK API Server running');
@@ -36,6 +36,12 @@ app.post('/api', (req, res) => {
         res.send(builder.buildObject(e.xmlObj))
     });
     
+});
+
+app.get('/download/:uuid', (req, res) => {
+    res.set('application/csv');
+    console.log(req.params.uuid)
+    res.send('Name,Value,Test,'+req.params.uuid)
 });
 
 app.listen(PORT, () => {

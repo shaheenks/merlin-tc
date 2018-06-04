@@ -2,31 +2,19 @@ const responseBuilder = require('../responseBuilder');
 
 // Your action goes here....
 const buildResponse = (params, callback) => {
-    let obj = {node : []};
-    let randomNumber1 = Math.ceil(new Date().getUTCSeconds()/30);
-    let randomNumber2 = (Math.ceil(new Date().getUTCSeconds()%2)+1);
-    //Randomizing response.
-    for (let i=0; i<randomNumber2; i++) {
-        let tmp = {$:{}};
-        if (params.inputName == 'composite_nodes') tmp.$['too-many'] = true;
-        if (randomNumber1 == 1) {
-            tmp.$['node-name'] = `Node${i}`
-            tmp.$['display-name'] = `Node${i}_disp`
-            tmp.$['has_children'] = "true"
-        } else {
-            tmp.$['node-name'] = `Node${i}`
-        }
-        obj.node.push(tmp)
-    }
+    let randomNumber1 = Math.ceil(new Date().getUTCSeconds()/2);
+    //Fetching details from queryStore.
+    let obj = params.serverRequestHandler.getResults('abcde', randomNumber1+0, randomNumber1+30, 8);
+
     // set first attribute true (for SUCCESS response), false (for FAILURE response). Second attribure is return object.
     callback(false, obj);
 };
 
 const handleRequest = (params) => {
-    console.log(`${new Date().toISOString()} ${params.uuid} input-names executing.`);
+    console.log(`${new Date().toISOString()} ${params.uuid} rm-query executing.`);
     return new Promise((resolve, reject) => {
 
-        buildResponse(params, (err, returnObj) => {
+        buildResponse(params, (err, obj) => {
             if (err) {
                 // Buidling FAILURE response.
                 var responseObj = new responseBuilder.ResponseObj(
@@ -42,7 +30,7 @@ const handleRequest = (params) => {
                     'merlin-response', 
                     {'request-type': params.requestType, 'response-type': 'success'},
                     undefined,
-                    {node: returnObj.node}
+                    {table: returnObj.table}
                 );
                 // Sending SUCCESS response.
                 resolve(responseObj)

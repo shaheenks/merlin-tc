@@ -1,102 +1,169 @@
 const requestHandler = require('./RequestHandlers/requestHandler.js');
 const serverRequest = new require('./serverRequest').serverRequest;
 
-const serverRequestHandler = new serverRequest();
+// For Query Data Storage.
+const queryStore = new serverRequest();
 
 const handleRequest = (params) => {
-    var attributes = params.body['merlin-request']['$'];
+    var reqAttributes = params.body['merlin-request']['$'];
     // Extracting request-type & client-req-id from the request.
-    var requestType = attributes['request-type'];
-    var clientReqId = attributes['client-req-id']; 
-
-    // Verifying client-req-id in the request.
-    if (clientReqId) {
-        console.log(`${new Date().toISOString()} ${params.uuid} client-req-id ${clientReqId}`);
-    } else {
-        console.log(`${new Date().toISOString()} ${params.uuid} client-req-id null`)
-    }
+    var requestType = reqAttributes['request-type']; 
 
     // Verifying request-type in the request.
-    console.log(`${new Date().toISOString()} ${params.uuid} request-type ${requestType}`)
+    console.log(`${new Date().toISOString()} ${params.uuid} ${requestType} Incoming Request.`)
     switch (requestType) {
         case 'input-names':
             return requestHandler.inputNames({
-                ...params, 
+                ...params, // body, uuid, ts.
                 requestType, 
-                clientReqId,
-                inputName: attributes['input-name']
+                inputName: reqAttributes['input-name']
             });
             break;
         case 'input-values':
-            return requestHandler.inputValues({...params, requestType, clientReqId});
+            return requestHandler.inputValues({
+                ...params,
+                requestType,
+                inputName: reqAttributes['input-name'],
+                nodeName: reqAttributes['node-name']
+            });
             break;   
         case 'query-submit':
-            return requestHandler.querySubmit({...params, requestType, clientReqId, serverRequestHandler});
+            return requestHandler.querySubmit({
+                ...params, 
+                requestType,
+                queryStore 
+            });
             break;
         case 'query-status':
-            return requestHandler.queryStatus({...params, requestType, clientReqId, serverRequestHandler, serverRequestId: attributes['server-request-id']});
+            return requestHandler.queryStatus({
+                ...params, 
+                requestType,  
+                queryStore, 
+                serverRequestId: reqAttributes['server-request-id']
+            });
             break;
         case 'query-cancel':
-            return requestHandler.queryCancel({...params, requestType, clientReqId, serverRequestHandler, serverRequestId: attributes['server-request-id']});
+            return requestHandler.queryCancel({
+                ...params, 
+                requestType, 
+                queryStore, 
+                serverRequestId: reqAttributes['server-request-id']
+            });
             break;
         case 'get-results':
             return requestHandler.getResults({
                 ...params, 
-                requestType, 
-                clientReqId, 
-                serverRequestHandler, 
-                serverRequestId: attributes['server-request-id'],
-                startRow: attributes['start-row'],
-                endRow: attributes['end-row']
+                requestType,  
+                queryStore, 
+                serverRequestId: reqAttributes['server-request-id'],
+                startRow: reqAttributes['start-row'],
+                endRow: reqAttributes['end-row']
             });
             break;
         case 'download-results':
             return requestHandler.downloadResults({
                 ...params, 
                 requestType, 
-                clientReqId, 
-                serverRequestHandler, 
-                serverRequestId: attributes['server-request-id'],
+                queryStore,
+                serverRequestId: reqAttributes['server-request-id'],
+                host: process.env.HEROKU_URL || require('os').hostname()+':' + '3000'
             });
             break;
         case 'query-sql':
-            return requestHandler.querySql({...params, requestType, clientReqId});
+            return requestHandler.querySql({
+                ...params, 
+                requestType
+            });
             break;
         case 'load-query':
-            return requestHandler.loadQuery({...params, requestType, clientReqId, queryName: attributes['query-name'], userName: attributes['user-name']});
+            return requestHandler.loadQuery({
+                ...params, 
+                requestType,
+                queryName: reqAttributes['query-name'], 
+                userName: reqAttributes['user-name']
+            });
             break;
         case 'save-query':
-            return requestHandler.saveQuery({...params, requestType, clientReqId, queryName: attributes['query-name'], overwrite: attributes['overwrite']});
+            return requestHandler.saveQuery({
+                ...params, 
+                requestType, 
+                queryName: reqAttributes['query-name'], 
+                overwrite: reqAttributes['overwrite']
+            });
             break;
         case 'rm-query':
-            return requestHandler.rmQuery({...params, requestType, clientReqId, queryName: attributes['query-name']});
+            return requestHandler.rmQuery({
+                ...params, 
+                requestType,  
+                queryName: reqAttributes['query-name']
+            });
             break;
         case 'ls-query':
-            return requestHandler.lsQuery({...params, requestType, clientReqId, userOnly: attributes['user-only'], serverRequestHandler});
+            return requestHandler.lsQuery({
+                ...params, 
+                requestType, 
+                userOnly: reqAttributes['user-only'], 
+                queryStore,
+                startRow: reqAttributes['start-row'],
+                endRow: reqAttributes['end-row']
+            });
             break;
         case 'create-script-list':
-            return requestHandler.createScriptList({...params, requestType, clientReqId, scriptListName: attributes['script-list-name']});
+            return requestHandler.createScriptList({
+                ...params, 
+                requestType,  
+                scriptListName: reqAttributes['script-list-name']
+            });
             break;
         case 'rm-script-list':
-            return requestHandler.rmScriptList({...params, requestType, clientReqId, scriptListName: attributes['script-list-name']});
+            return requestHandler.rmScriptList({
+                ...params, 
+                requestType, 
+                scriptListName: reqAttributes['script-list-name']
+            });
             break;
         case 'load-script-list':
-            return requestHandler.loadScriptList({...params, requestType, clientReqId, scriptListName: attributes['script-list-name']});
+            return requestHandler.loadScriptList({
+                ...params, 
+                requestType, 
+                scriptListName: reqAttributes['script-list-name']
+            });
             break;
         case 'edit-script-list':
-            return requestHandler.editScriptList({...params, requestType, clientReqId, scriptListName: attributes['script-list-name']});
+            return requestHandler.editScriptList({
+                ...params, 
+                requestType,
+                scriptListName: reqAttributes['script-list-name']
+            });
             break;
         case 'ls-script-list':
-            return requestHandler.lsScriptList({...params, requestType, clientReqId});
+            return requestHandler.lsScriptList({
+                ...params, 
+                requestType
+            });
             break;
         case 'server-stats':
-            return requestHandler.serverStatus({...params, requestType, clientReqId});
+            return requestHandler.serverStatus({
+                ...params, 
+                requestType
+            });
             break;
         default:
-            return requestHandler.defaultHandler({...params, requestType, clientReqId});
+            return requestHandler.defaultHandler({
+                ...params, 
+                requestType
+            });
     };
 };
 
+const downloadRequest = (params) => {
+    return requestHandler.downloadRequest({
+        ...params,
+        queryStore
+    });
+};
+
 module.exports = {
-    handleRequest
+    handleRequest,
+    downloadRequest
 };

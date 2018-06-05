@@ -20,6 +20,8 @@ const lsScriptList = require('./ls-script-list');
 
 const serverStatus = require('./server-status');
 
+const downloadRequest = require('./download-request');
+
 const defaultHandler = require('./default-handler');
 
 module.exports = {
@@ -41,5 +43,6 @@ module.exports = {
     editScriptList: editScriptList.handleRequest,
     lsScriptList: lsScriptList.handleRequest,
     serverStatus: serverStatus.handleRequest,
+    downloadRequest: downloadRequest.handleRequest,
     defaultHandler: defaultHandler.handleRequest
 };

@@ -12,7 +12,7 @@ const buildResponse = (callback) => {
 };
 
 const handleRequest = (params) => {
-    console.log(`${new Date().toISOString()} ${params.uuid} query-sql executing.`);
+    console.log(`${new Date().toISOString()} ${params.uuid} ${params.requestType} Processing Request.`);
     return new Promise((resolve, reject) => {
 
         buildResponse((err, returnObj) => {
@@ -24,6 +24,7 @@ const handleRequest = (params) => {
                     'Unable to retrieve SQL.'
                 );
                 // Sending FAILURE response.
+                console.log(`${new Date().toISOString()} ${params.uuid} ${params.requestType} Error Response Sent.`)
                 reject(responseObj);
             } else {
                 // Building SUCCESS response.
@@ -32,6 +33,7 @@ const handleRequest = (params) => {
                     {'request-type': params.requestType, 'response-type': 'success'},
                     returnObj
                 );
+                console.log(`${new Date().toISOString()} ${params.uuid} ${params.requestType} Success Response Sent.`)
                 // Sending SUCCESS response.
                 resolve(responseObj)
             }

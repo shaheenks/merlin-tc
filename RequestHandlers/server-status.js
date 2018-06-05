@@ -9,32 +9,42 @@ const buildResponse = (callback) => {
         {key: 'Total Lists Created', value: '50'},
         {key: 'Total Templates Created', value: '50'}
     ];
-    // set first attribute true (for SUCCESS response), false (for FAILURE response). Second attribure is return object.
+    // set first attribute true (for SUCCESS response), false (for FAILURE response). 
+    // Second attribure is return object.
     callback(false, statsObj);
 };
 
 const handleRequest = (params) => {
-    console.log(`${new Date().toISOString()} ${params.uuid} server-status executing.`);
+    console.log(`${new Date().toISOString()} ${params.uuid} ${params.requestType} Processing Request.`)
     return new Promise((resolve, reject) => {
         buildResponse((err, statsObj) => {
             if (err) {
                 // Buidling FAILURE response.
                 var responseObj = new responseBuilder.ResponseObj(
                     'merlin-response', 
-                    {'request-type': params.requestType, 'response-type': 'error', 'error-type': 'server'}, 
+                    {
+                        'request-type': params.requestType, 
+                        'response-type': 'error', 
+                        'error-type': 'server'
+                    }, 
                     'Unable to fetch data'
                 );
+                console.log(`${new Date().toISOString()} ${params.uuid} ${params.requestType} Error Response Sent.`)
                 // Sending FAILURE response.
                 reject(responseObj);
             } else {
                 // Buidling SUCCESS response.
                 var responseObj = new responseBuilder.ResponseObj(
                     'merlin-response', 
-                    {'request-type': params.requestType, 'response-type': params.requestType}
+                    {
+                        'request-type': params.requestType, 
+                        'response-type': params.requestType
+                    }
                 );
-                // For each element in the statObj array.
+                // Pushing data into Response Obj
                 statsObj.forEach(stat => responseObj.addPlainElement('server-stat', stat));
                 // Sending SUCCESS response.
+                console.log(`${new Date().toISOString()} ${params.uuid} ${params.requestType} Success Response Sent.`)
                 resolve(responseObj);
             }
         });

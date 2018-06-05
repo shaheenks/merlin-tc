@@ -19,11 +19,16 @@ class serverRequest {
         return this.queryStore[uuid].status;
     }
     cancelQuery(uuid) {
-        if (this.queryStore[uuid].status == 'running' && this.queryStore[uuid]) this.queryStore[uuid].status = 'cancelled'
+        if (this.queryStore[uuid] && this.queryStore[uuid].status == 'running') {
+            this.queryStore[uuid].status = 'cancelled';
+            return true;
+        } else {
+            return false
+        }
     }
-    getResults(uuid, startRow, endRow, columns) {
+    getResults(uuid, startRow, endRow, columns, totalRecords) {
         let returnObj = {
-            rowCount: endRow-startRow,
+            rowCount: totalRecords,
             endRow: endRow,
             startRow: startRow,
             table: [
@@ -36,12 +41,14 @@ class serverRequest {
                 }
             ]
         };
+        let stopFetch = endRow < totalRecords ? endRow : totalRecords;
         // Building column headings.
-        for (let i=0; i<columns; i++) {
-            returnObj.table[0].tr[0].th.push(`Column_${i+1}`);
+        for (let j=0; j<columns; j++) {
+            returnObj.table[0].tr[0].th.push(`Column_${j+1}`);
         };
-        // Filling Column data.
-        for (let i=1; i<=returnObj.rowCount; i++) {
+
+        for (let i=startRow+1; i<=stopFetch; i++) {
+            // Filling Column data.
             let columnsList = [];
             for(let j=0; j<columns; j++) {
                 columnsList.push(`Row_${i}_Column_${j}`);
@@ -50,6 +57,7 @@ class serverRequest {
                 td: columnsList
             };
         }
+        
         return returnObj;
     }
     getAllQueries() {
@@ -57,7 +65,11 @@ class serverRequest {
         return results;
     }
     getOneQuery(uuid) {
-        return this.queryStore[uuid];
+        if (this.queryStore[uuid]) {
+            return this.queryStore[uuid]
+        } else {
+            return false;
+        }
     }
     startJob(uuid) {
         // Handle to start processing.

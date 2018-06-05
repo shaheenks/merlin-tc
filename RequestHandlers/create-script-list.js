@@ -9,27 +9,35 @@ const buildResponse = (callback) => {
 };
 
 const handleRequest = (params) => {
-    console.log(`${new Date().toISOString()} ${params.uuid} create-script-list executing.`);
+    console.log(`${new Date().toISOString()} ${params.uuid} ${params.requestType} Processing Request.`)
     return new Promise((resolve, reject) => {
-        //Print script-list-name if found.
-        console.log(`${new Date().toISOString()} ${params.uuid} script-list-name `+ JSON.stringify(params.scriptListName));
-
+        // Outputs query parameters if any.
+        console.log(`${new Date().toISOString()} ${params.uuid} ${params.requestType} script-list-name ${params.scriptListName}`);
         buildResponse((err, obj) => {
             if (err) {
                 // Buidling FAILURE response.
                 var responseObj = new responseBuilder.ResponseObj(
                     'merlin-response', 
-                    {'request-type': params.requestType, 'response-type': 'error', 'error-type': 'permission'}, 
+                    {
+                        'request-type': params.requestType, 
+                        'response-type': 'error', 
+                        'error-type': 'permission'
+                    }, 
                     'Access is denied.'
                 );
+                console.log(`${new Date().toISOString()} ${params.uuid} ${params.requestType} Error Response Sent.`)
                 // Sending FAILURE response.
                 reject(responseObj);
             } else {
                 // Building SUCCESS response.
                 var responseObj = new responseBuilder.ResponseObj(
                     'merlin-response', 
-                    {'request-type': params.requestType, 'response-type': 'success'}
+                    {
+                        'request-type': params.requestType, 
+                        'response-type': 'success'
+                    }
                 );
+                console.log(`${new Date().toISOString()} ${params.uuid} ${params.requestType} Success Response Sent.`)
                 // Sending SUCCESS response.
                 resolve(responseObj)
             }

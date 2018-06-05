@@ -9,7 +9,7 @@ const buildResponse = (callback) => {
 };
 
 const handleRequest = (params) => {
-    console.log(`${new Date().toISOString()} ${params.uuid} default-handler executing.`);
+    console.log(`${new Date().toISOString()} ${params.uuid} ${params.requestType} Processing Request.`)
     return new Promise((resolve, reject) => {
         buildResponse((err, obj) => {
             if (err) {
@@ -20,6 +20,7 @@ const handleRequest = (params) => {
                     'response-type': 'error', 'error-type': 'general'}, 
                     'API function request not found.'
                 );
+                console.log(`${new Date().toISOString()} ${params.uuid} ${params.requestType} Error Response Sent.`)
                 // Sending FAILURE response.
                 reject(responseObj);
             } else {
@@ -28,6 +29,7 @@ const handleRequest = (params) => {
                     'merlin-response', 
                     {'request-type': params.requestType, 'response-type': 'success'}
                 );
+                console.log(`${new Date().toISOString()} ${params.uuid} ${params.requestType} Success Response Sent.`)
                 // Sending SUCCESS response.
                 resolve(responseObj);
             }

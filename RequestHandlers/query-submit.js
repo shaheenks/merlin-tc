@@ -42,7 +42,7 @@ const handleRequest = (params) => {
                     {
                         'request-type': params.requestType, 
                         'response-type': 'status', 
-                        'status': 'status', 
+                        'status': returnObj.status, 
                         'server-request-id': returnObj.uuid
                     }
                 );

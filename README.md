@@ -1,6 +1,8 @@
 # MERLIN MOCK API Server.
 
-## HEROKU URL : https://merlin-tc.herokuapp.com/
+## HEROKU URL : https://merlin-tc.herokuapp.com/api
+
+####Test Endpoint: https://merlin-tc.herokuapp.com
 
 Deployment Steps:
 

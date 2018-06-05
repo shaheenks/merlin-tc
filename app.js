@@ -25,7 +25,7 @@ const PORT = process.env.PORT || 3000;
 
 // Root Endpoint. Dummy Response.
 app.get('/', (req, res) => {
-    res.send('Merlin MOCK API Server running');
+    res.send('Merlin MOCK API Server running at /api');
 });
 
 // POST method for API calls.
